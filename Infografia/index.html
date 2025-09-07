@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generación de Voz con IA — Timeline Interactivo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <h1><span class="highlight">GENERACIÓN</span><br>DE VOZ CON <span class="highlight">IA</span></h1>
+      <p>La inteligencia artificial generativa de voz crea, imita o transforma voces humanas. Usa modelos de aprendizaje profundo entrenados con grandes volúmenes de audio para producir habla sintética natural con variaciones de tono, ritmo, acento y emoción.</p>
+      <a href="#timeline" class="btn">Explorar</a>
+    </div>
+  </header>
+
+  <section class="intro">
+    <h2>TÍTULO INTRODUCTORIO</h2>
+    <p>Usa los filtros de color para navegar por la cronología. Cada color representa un eje temático. Abre las tarjetas para ver noticias, videos, gráficos e interacciones.</p>
+  </section>
+
+  <main id="timeline" class="timeline">
+    <!-- EJEMPLOS DE CARDS: Podemos duplicar/Editar DESDE ACA.  IMPORTANTE: Cada article tiene data-date en formato YYYY-MM-DD -->
+    <article class="t-item left" data-date="2007-06-01" data-color="verde" data-type="noticia">
+      <span class="dot verde"></span>
+      <div class="card verde type-noticia">
+        <h3>2007–2012 · Vocaloid y el estilo MIDI</h3>
+        <div class="meta"><span class="pill">Tecnología</span><span class="pill">Herramientas</span></div>
+        <p>Surgen plataformas como Vocaloid, donde se introducen notas MIDI para síntesis vocal.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Contenido ampliado: inserta aquí la noticia completa, imágenes o links.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2014-03-10" data-color="rosa" data-type="video">
+      <span class="dot rosa"></span>
+      <div class="card rosa type-video">
+        <h3>2014 · Primeros covers neuronales virales</h3>
+        <div class="meta"><span class="pill">Cultura</span><span class="pill">Video</span></div>
+        <p>Demostraciones de redes neuronales cantando estilos populares.</p>
+        <button class="toggle" aria-expanded="false">Ver video</button>
+        <div class="expand">
+          <p>Puedes embeber un video (iframe).</p>
+          <div class="embed"><iframe title="demo" src="" loading="lazy"></iframe></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2018-09-05" data-color="rojo" data-type="grafico">
+      <span class="dot rojo"></span>
+      <div class="card rojo type-grafico">
+        <h3>2018 · Calidad vs. Tamaño del dataset</h3>
+        <div class="meta"><span class="pill">Investigación</span><span class="pill">Gráfico</span></div>
+        <p>Relación entre tamaño de corpus y MOS (Mean Opinion Score).</p>
+        <button class="toggle" aria-expanded="false">Ver gráfico</button>
+        <div class="expand">
+          <img alt="placeholder gráfico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='360'%3E%3Crect width='100%25' height='100%25' fill='black'/%3E%3Ctext x='50%25' y='50%25' fill='white' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20'%3EInserta un gráfico aquí%3C/text%3E%3C/svg%3E">
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2020-02-01" data-color="azul" data-type="mapa">
+      <span class="dot azul"></span>
+      <div class="card azul type-mapa">
+        <h3>2020 · Laboratorios líderes por región</h3>
+        <div class="meta"><span class="pill">Mapa</span><span class="pill">Instituciones</span></div>
+        <p>Distribución global de grupos que investigan TTS y clonación de voz.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Inserta un mapa estático/dinámico o un embed.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2021-06-01" data-color="morado" data-type="trivia">
+      <span class="dot morado"></span>
+      <div class="card morado type-video">
+        <h3>Trivia · ¿Qué es un vocoder neural?</h3>
+        <div class="meta"><span class="pill">Interacción</span><span class="pill">Trivia</span></div>
+        <p>Selecciona la opción correcta:</p>
+        <div class="quiz" data-answer="b">
+          <button class="q" data-opt="a">a) Un compresor de dinámica</button>
+          <button class="q" data-opt="b">b) Modelo que convierte espectrogramas en audio</button>
+          <button class="q" data-opt="c">c) Filtro para remover ruido blanco</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2022-04-20" data-color="verde" data-type="dato">
+      <span class="dot verde"></span>
+      <div class="card verde type-noticia">
+        <h3>¿Sabías que…?</h3>
+        <div class="meta"><span class="pill">Dato</span><span class="pill">Curiosidad</span></div>
+        <p>Los sistemas modernos pueden aprender rasgos de una voz con menos de 30 segundos de audio.</p>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2023-03-01" data-color="rosa" data-type="noticia">
+      <span class="dot rosa"></span>
+      <div class="card rosa type-noticia">
+        <h3>2023 · Derechos de autor y voces sintéticas</h3>
+        <div class="meta"><span class="pill">Regulación</span></div>
+        <p>Debate público sobre licencias de voz y consentimiento.</p>
+        <button class="toggle" aria-expanded="false">Leer más</button>
+        <div class="expand">
+          <p>Añade aquí enlaces, citas o documentos.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2024-07-10" data-color="azul" data-type="trivia">
+      <span class="dot azul"></span>
+      <div class="card azul type-video">
+        <h3>Trivia · ¿Qué es CTC?</h3>
+        <div class="meta"><span class="pill">Interacción</span><span class="pill">ASR</span></div>
+        <p>Elige una opción:</p>
+        <div class="quiz" data-answer="c">
+          <button class="q" data-opt="a">a) Un dataset de canto coral</button>
+          <button class="q" data-opt="b">b) Un plugin de afinación automática</button>
+          <button class="q" data-opt="c">c) Función de pérdida para alinear audio y texto</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2025-03-18" data-color="rojo" data-type="video">
+      <span class="dot rojo"></span>
+      <div class="card rojo type-video">
+        <h3>2025 · Doblaje multilingüe en tiempo real</h3>
+        <div class="meta"><span class="pill">Aplicación</span><span class="pill">Tiempo real</span></div>
+        <p>Transcripción, traducción y síntesis en cadena de latencia ultrabaja.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Espacio para video o demo.</p>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <section class="feedback" id="feedback">
+    <h3>¿Te gustó esta infografía?</h3>
+    <div class="like">
+      <button type="button" data-like="si">Sí 👍</button>
+      <button type="button" data-like="no">No 👎</button>
+    </div>
+    <div class="rate" aria-label="Calificación">
+      <span class="star" data-star="1">☆</span>
+      <span class="star" data-star="2">☆</span>
+      <span class="star" data-star="3">☆</span>
+      <span class="star" data-star="4">☆</span>
+      <span class="star" data-star="5">☆</span>
+    </div>
+
+    <div id="fb-form">
+      <label>Déjanos un comentario o comparte un link/dato que conozcas:
+        <textarea id="fb-text" rows="4"></textarea>
+      </label>
+      <div class="fb-actions">
+        <button class="btn ghost" id="fb-clear">Limpiar</button>
+        <button class="btn primary" id="fb-send">Enviar</button>
+      </div>
+    </div>
+
+    <p id="fb-msg" class="fb-message" aria-live="polite"></p>
+  </section>
+
+  <button class="fab" id="fab" title="Filtros">⚙️</button>
+
+  <div class="modal" id="modal">
+    <div class="panel">
+      <h3>Filtros por color</h3>
+      <p class="muted">Selecciona uno o varios. \"Todos\" vuelve a la vista inicial.</p>
+      <div class="filters">
+        <label class="lbl-verde"><input type="checkbox" value="verde"> Verde</label>
+        <label class="lbl-rojo"><input type="checkbox" value="rojo"> Rojo</label>
+        <label class="lbl-azul"><input type="checkbox" value="azul"> Azul</label>
+        <label class="lbl-rosa"><input type="checkbox" value="rosa"> Rosa</label>
+        <label class="lbl-morado"><input type="checkbox" value="morado"> Morado</label>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="all">Todos</button>
+        <button class="btn primary" id="apply">Aplicar</button>
+        <button class="btn ghost" id="close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- contenedor de confetti (emojis) -->
+  <div id="confetti-root" aria-hidden="true"></div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="bib">
+        <h4>Bibliografía / Fuentes</h4>
+        <ul>
+          <li>Artículos académicos sobre TTS y vocoders.</li>
+          <li>Demostraciones públicas y repositorios (ej. Vocoder repos, demos de Vocaloid).</li>
+          <li>Informes y notas de prensa sobre regulaciones y derechos de voz.</li>
+        </ul>
+      </div>
+      <div class="credits">
+        <h4>Créditos</h4>
+        <p>Creación / Diseño / Programación:</p>
+        <ul>
+          <li>Alessandro Frade</li>
+          <li>Ailen Avanzini</li>
+          <li>Juan Bautista Ruiz Arizcuren</li>
+          <li>Luciano Testa</li>
+          <li>Lautaro Gomez Arenillas</li>
+          <li>Franco Vizgarra</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
