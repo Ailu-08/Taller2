@@ -1,6 +1,6 @@
 //Script.js - comportamiento de filtros, expandibles, trivias, feedback + confetti
 
-//Utilidades fechas ---
+//Utilidades fechas
 function parseDateFrom(el) {
   const raw = el.dataset.date || "";
   // intentar YYYY-MM-DD o YYYY
@@ -202,3 +202,4 @@ relayout();
 
 // Para debuguear! Descomentar la siguiente línea:
 // console.log('Timeline items:', document.querySelectorAll('.t-item').length);
+
