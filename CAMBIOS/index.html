@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Generación de Voz con IA — Timeline Interactivo</title>
+  <style>
+:root{ 
+  --bg:#0b0a0a;
+  --text:#f7f7f7;
+  --muted:#cdd5df;
+  --accent:#ad31ff;
+
+  --verde-1:#16a34a; --verde-2:#7cfc89;
+  --rojo-1:#ef4444; --rojo-2:#ff7b7b;
+  --azul-1:#2563eb; --azul-2:#6aa7ff;
+  --rosa-1:#db2777; --rosa-2:#ff83c1;
+  --morado-1:#cdd928; --morado-2:#e1ff85;
+  --amarillo-1:#facc15; --amarillo-2:#fff59a;
+
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;line-height:1.45}
+
+/* HERO */
+.hero{padding:70px 5% 40px;background:linear-gradient(180deg,#081006,#050505);background-size:cover;background-position:center}
+.hero h1{font-size:clamp(28px,4vw,56px);margin:0;font-weight:800}
+.hero .highlight{color:var(--accent);text-shadow:0 2px 8px rgba(186, 49, 255, 0.12)}
+.hero p{max-width:900px;color:#f7d8fd;margin:14px 0;font-size:1rem}
+.btn{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--accent);color:#0d0214;font-weight:700;text-decoration:none;border:none;cursor:pointer}
+.btn:hover{box-shadow:0 10px 30px rgba(0,0,0,.5);transform:translateY(-3px)}
+
+/* INTRO */
+.intro{padding:30px 5%;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+.intro h2{color:var(--accent);margin:0 0 8px;text-transform:uppercase}
+.intro p{max-width:920px;margin:0 auto;color:#e9c8f7}
+
+/* TIMELINE */
+.timeline{position:relative;max-width:1100px;margin:40px auto;padding:10px 0}
+.timeline::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:6px;transform:translateX(-50%);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.6),rgba(255,255,255,.08));border-radius:999px}
+
+.t-item{position:relative;width:50%;padding:20px 28px;min-height:140px}
+.t-item.left{left:0;text-align:right}
+.t-item.right{left:50%}
+.t-item .dot{position:absolute;top:38px;width:22px;height:22px;border-radius:50%;left:calc(100% - 11px);transform:translateX(0);box-shadow:0 0 0 6px rgba(255,255,255,.03),0 0 16px rgba(255,255,255,.06)}
+.t-item.right .dot{left:-11px}
+
+/* CARD base - unified rectangular cards */
+.card{position:relative;padding:20px;background:rgba(255,255,255,.92);backdrop-filter: blur(0);border-radius:var(--radius);border:1px solid rgba(0,0,0,.08);box-shadow:0 8px 22px rgba(0,0,0,.6);transition:transform .22s,box-shadow .22s;color:#071119}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(0,0,0,.65)}
+.card h3{margin:0 0 8px;font-size:1.05rem;color:#071119}
+.card p{margin:0 0 12px;word-break:break-word;color:#071119}
+.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;color:#334155}
+.pill{padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.04);font-size:.82rem;color:#071119}
+
+.card{min-height:120px;max-height:520px;overflow:hidden;display:flex;flex-direction:column}
+.card .expand{margin-top:12px;display:none;overflow:auto;padding-top:8px}
+.card.expanded{max-height:900px}
+.card.expanded .expand{display:block}
+
+/* Remove shape-specific classes - keep uniform rectangle */
+.type-noticia, .type-video, .type-grafico, .type-mapa{padding:18px}
+
+.card .expand img, .card .expand iframe{width:100%;height:auto;border-radius:8px}
+.embed{position:relative;padding-top:56.25%;width:100%}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+
+/* colors — now only background accents for dots + small left border */
+.card.verde{border-left:6px solid var(--verde-1)}
+.card.rojo{border-left:6px solid var(--rojo-1)}
+.card.azul{border-left:6px solid var(--azul-1)}
+.card.rosa{border-left:6px solid var(--rosa-1)}
+.card.morado{border-left:6px solid var(--morado-1)}
+.card.amarillo{border-left:6px solid var(--amarillo-1)}
+
+.dot.verde{background:var(--verde-1);border:3px solid rgba(167,243,208,.9)}
+.dot.rojo{background:var(--rojo-1);border:3px solid rgba(254,202,202,.9)}
+.dot.azul{background:var(--azul-1);border:3px solid rgba(191,219,254,.9)}
+.dot.rosa{background:var(--rosa-1);border:3px solid rgba(251,207,232,.9)}
+.dot.morado{background:var(--morado-1);border:3px solid rgba(221,214,254,.9)}
+.dot.amarillo{background:var(--amarillo-1);border:3px solid rgba(255,245,157,.9)}
+
+/* toggles */
+.toggle{cursor:pointer;border:none;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.06);color:#071119;align-self:flex-start}
+.toggle:hover{box-shadow:0 8px 24px rgba(0,0,0,.12)}
+
+/* floating filter button */
+.fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:22px;cursor:pointer;background:#101010;color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s}
+.fab.visible{opacity:1;pointer-events:auto}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.open{display:flex}
+.panel{width:min(640px,94vw);background:#0f0f10;border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,.06)}
+.panel h3{margin:0 0 8px}
+.panel .muted{color:var(--muted);margin:6px 0 12px}
+.filters{display:flex;flex-wrap:wrap;gap:12px}
+.filters label{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.06);cursor:pointer}
+.filters input{margin:0}
+
+/* feedback */
+.feedback{max-width:920px;margin:60px auto;padding:18px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04)}
+.like{display:flex;gap:10px;margin:8px 0}
+.like button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--text);cursor:pointer}
+.like button:hover{box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.like button.active{background:linear-gradient(90deg,#ffd166,#ff7b7b);color:#071119;border-color:transparent}
+.rate{display:flex;gap:8px;margin:10px 0}
+.star{font-size:20px;cursor:pointer;color:var(--muted)}
+.star.locked{cursor:default;opacity:.6}
+.fb-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.fb-message{margin-top:12px;opacity:.95;font-weight:700}
+
+/* file upload preview in curiosities */
+.media-upload{display:flex;gap:10px;align-items:center;margin-top:8px}
+.media-upload input{border:1px dashed rgba(0,0,0,.08);padding:8px;border-radius:8px;background:#fff}
+.media-player{width:100%;margin-top:8px}
+
+/* confetti root */
+#confetti-root{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9999}
+
+/* footer */
+.site-footer{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);padding:22px 5% 60px;margin-top:30px;border-top:1px solid rgba(255,255,255,.03)}
+.site-footer .container{max-width:1100px;margin:0 auto;display:flex;gap:30px;flex-wrap:wrap;justify-content:space-between}
+.site-footer h4{margin:0 0 8px}
+.site-footer ul{margin:0;padding-left:18px}
+.site-footer li{margin:6px 0;color:var(--muted)}
+
+.hidden{display:none !important}
+
+@media (max-width:900px){
+  .t-item{width:100%;left:0 !important;text-align:left;padding:14px}
+  .t-item .dot{left:10px}
+  .timeline::before{left:20px;transform:none}
+  .card{max-height:none}
+  .panel{width:96%}
+}
+  </style>
+</head>
+<body>
+<header class="hero" id="hero" style="background-image:url('assets/Fondo.jpg'); background-size:cover; background-position:center;">
+    <div class="hero-content">
+      <h1><span class="highlight">GENERACIÓN</span><br>DE VOZ CON <span class="highlight">IA</span></h1>
+      <p>La inteligencia artificial generativa de voz crea, imita o transforma voces humanas. Usa modelos de aprendizaje profundo entrenados con grandes volúmenes de audio para producir habla sintética natural con variaciones de tono, ritmo, acento y emoción.</p>
+      <a href="#timeline" class="btn">Explorar</a>
+    </div>
+  </header>
+
+  <section class="intro">
+    <h2>TÍTULO INTRODUCTORIO</h2>
+    <p>Usa los filtros para navegar por la cronología. Cada color representa un eje temático. Abre las tarjetas para ver noticias, videos, gráficos e interacciones.</p>
+  </section>
+
+  <main id="timeline" class="timeline">
+    <!-- EXAMPLES: all cards are rectangular. Each article must have data-date YYYY-MM-DD -->
+
+    <article class="t-item left" data-date="2007-06-01" data-color="verde" data-type="noticia">
+      <span class="dot verde"></span>
+      <div class="card verde">
+        <h3>2007–2012 · Vocaloid y el estilo MIDI</h3>
+        <div class="meta"><span class="pill">Tecnología</span><span class="pill">Herramientas</span></div>
+        <p>Surgen plataformas como Vocaloid, donde se introducen notas MIDI para síntesis vocal.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Contenido ampliado: inserta aquí la noticia completa, imágenes o <a class="external-link" href="#" target="_blank" rel="noopener">enlace</a>.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2014-03-10" data-color="rosa" data-type="video">
+      <span class="dot rosa"></span>
+      <div class="card rosa">
+        <h3>2014 · Primeros covers neuronales virales</h3>
+        <div class="meta"><span class="pill">Cultura</span><span class="pill">Video</span></div>
+        <p>Demostraciones de redes neuronales cantando estilos populares.</p>
+        <button class="toggle" aria-expanded="false">Ver video</button>
+        <div class="expand">
+          <p>Puedes embeber un video (iframe) o enlazar a un hosting.</p>
+          <div class="embed"><iframe title="demo" src="" loading="lazy"></iframe></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2018-09-05" data-color="rojo" data-type="grafico">
+      <span class="dot rojo"></span>
+      <div class="card rojo">
+        <h3>2018 · Calidad vs. Tamaño del dataset</h3>
+        <div class="meta"><span class="pill">Investigación</span><span class="pill">Gráfico</span></div>
+        <p>Relación entre tamaño de corpus y MOS (Mean Opinion Score).</p>
+        <button class="toggle" aria-expanded="false">Ver gráfico</button>
+        <div class="expand">
+          <img alt="placeholder gráfico" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='360'%3E%3Crect width='100%25' height='100%25' fill='black'/%3E%3Ctext x='50%25' y='50%25' fill='white' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20'%3EInserta un gráfico aquí%3C/text%3E%3C/svg%3E">
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2020-02-01" data-color="azul" data-type="mapa">
+      <span class="dot azul"></span>
+      <div class="card azul">
+        <h3>2020 · Laboratorios líderes por región</h3>
+        <div class="meta"><span class="pill">Mapa</span><span class="pill">Instituciones</span></div>
+        <p>Distribución global de grupos que investigan TTS y clonación de voz.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Inserta un mapa estático/dinámico o un embed.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Curiosidades ("¿Sabías que...?") - color amarillo, tienen fecha para posicionarlas en la línea -->
+    <article class="t-item left" data-date="2022-04-20" data-color="amarillo" data-type="curiosidad">
+      <span class="dot amarillo"></span>
+      <div class="card amarillo">
+        <h3>¿Sabías que…? · Muestras pequeñas</h3>
+        <div class="meta"><span class="pill">Dato</span><span class="pill">Curiosidad</span></div>
+        <p>Los sistemas modernos pueden aprender rasgos de una voz con menos de 30 segundos de audio.</p>
+        <button class="toggle" aria-expanded="false">Más</button>
+        <div class="expand">
+          <p>Puedes subir un audio (mp3) o un video (mp4) relacionado con esta curiosidad.</p>
+          <div class="media-upload">
+            <input type="file" accept="audio/*,video/*" class="media-input">
+          </div>
+          <div class="media-player"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item left" data-date="2023-03-01" data-color="rosa" data-type="noticia">
+      <span class="dot rosa"></span>
+      <div class="card rosa">
+        <h3>2023 · Derechos de autor y voces sintéticas</h3>
+        <div class="meta"><span class="pill">Regulación</span></div>
+        <p>Debate público sobre licencias de voz y consentimiento.</p>
+        <button class="toggle" aria-expanded="false">Leer más</button>
+        <div class="expand">
+          <p>Añade aquí enlaces, citas o documentos. Ejemplo de enlace: <a class="external-link" href="#" target="_blank" rel="noopener">Noticia sobre regulación</a></p>
+        </div>
+      </div>
+    </article>
+
+    <article class="t-item right" data-date="2025-03-18" data-color="rojo" data-type="video">
+      <span class="dot rojo"></span>
+      <div class="card rojo">
+        <h3>2025 · Doblaje multilingüe en tiempo real</h3>
+        <div class="meta"><span class="pill">Aplicación</span><span class="pill">Tiempo real</span></div>
+        <p>Transcripción, traducción y síntesis en cadena de latencia ultrabaja.</p>
+        <button class="toggle" aria-expanded="false">Abrir</button>
+        <div class="expand">
+          <p>Espacio para video o demo.</p>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- TRIVIA SECTION: section aparte al final de la linea (antes del feedback). Una trivia por módulo -->
+  <section id="trivias" class="trivias" style="max-width:1100px;margin:20px auto;padding:10px">
+    <h2 style="color:var(--accent);margin-left:6px">Trivias por módulo</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:12px">
+      <!-- Tecnología / verde -->
+      <div class="card verde" data-module="Tecnologia">
+        <h3>Trivia · Tecnología</h3>
+        <p>¿Qué técnica permite convertir espectrogramas en audio?</p>
+        <div class="meta"><span class="pill">Tecnología</span></div>
+        <div class="quiz" data-answer="b">
+          <button class="q" data-opt="a">a) GANs de imagen</button>
+          <button class="q" data-opt="b">b) Vocoder neural</button>
+          <button class="q" data-opt="c">c) Autoencoder de texto</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- Creaciones / rosa -->
+      <div class="card rosa" data-module="Creaciones">
+        <h3>Trivia · Creaciones y aplicaciones</h3>
+        <p>¿Cuál es un uso común de voces generadas por IA?</p>
+        <div class="meta"><span class="pill">Aplicaciones</span></div>
+        <div class="quiz" data-answer="a">
+          <button class="q" data-opt="a">a) Doblaje y asistentes virtuales</button>
+          <button class="q" data-opt="b">b) Compresión de imágenes</button>
+          <button class="q" data-opt="c">c) Creación de formatos vectoriales</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- Controversias / rojo -->
+      <div class="card rojo" data-module="Controversias">
+        <h3>Trivia · Controversias</h3>
+        <p>¿Qué problema legal suele mencionarse sobre voces sintéticas?</p>
+        <div class="meta"><span class="pill">Ética</span></div>
+        <div class="quiz" data-answer="b">
+          <button class="q" data-opt="a">a) Falta de ancho de banda</button>
+          <button class="q" data-opt="b">b) Derechos de autor y consentimiento</button>
+          <button class="q" data-opt="c">c) Formato del archivo</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- Futuro / azul -->
+      <div class="card azul" data-module="Futuro">
+        <h3>Trivia · Futuro</h3>
+        <p>¿Cuál es una tendencia probable en TTS generativa?</p>
+        <div class="meta"><span class="pill">Perspectiva</span></div>
+        <div class="quiz" data-answer="c">
+          <button class="q" data-opt="a">a) Menos colaboración humano-IA</button>
+          <button class="q" data-opt="b">b) Eliminación de personalización</button>
+          <button class="q" data-opt="c">c) Herramientas colaborativas y adaptativas</button>
+          <p class="q-result" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feedback" id="feedback">
+    <h3>¿Te gustó esta infografía?</h3>
+    <div class="like">
+      <button type="button" data-like="si">Sí 👍</button>
+      <button type="button" data-like="no">No 👎</button>
+    </div>
+    <div class="rate" aria-label="Calificación">
+      <span class="star" data-star="1">☆</span>
+      <span class="star" data-star="2">☆</span>
+      <span class="star" data-star="3">☆</span>
+      <span class="star" data-star="4">☆</span>
+      <span class="star" data-star="5">☆</span>
+    </div>
+
+    <div id="fb-form">
+      <label>Déjanos un comentario o comparte un link/dato que conozcas:
+        <textarea id="fb-text" rows="4"></textarea>
+      </label>
+      <div class="fb-actions">
+        <button class="btn ghost" id="fb-clear">Limpiar</button>
+        <button class="btn primary" id="fb-send">Enviar</button>
+      </div>
+    </div>
+
+    <p id="fb-msg" class="fb-message" aria-live="polite"></p>
+  </section>
+
+  <button class="fab" id="fab" title="Filtros">⚙️</button>
+
+  <div class="modal" id="modal">
+    <div class="panel">
+      <h3>Filtros por módulo</h3>
+      <p class="muted">Selecciona uno o varios. "Todos" vuelve a la vista inicial.</p>
+      <div class="filters">
+        <!-- label text shows module name; value is color key -->
+        <label class="lbl-verde"><input type="checkbox" value="verde"> Tecnología</label>
+        <label class="lbl-rosa"><input type="checkbox" value="rosa"> Creaciones</label>
+        <label class="lbl-rojo"><input type="checkbox" value="rojo"> Controversias</label>
+        <label class="lbl-azul"><input type="checkbox" value="azul"> Futuro</label>
+        <label class="lbl-amarillo"><input type="checkbox" value="amarillo"> Curiosidades</label>
+      </div>
+      <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn ghost" id="all">Todos</button>
+        <button class="btn primary" id="apply">Aplicar</button>
+        <button class="btn ghost" id="close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confetti-root" aria-hidden="true"></div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="bib">
+        <h4>Bibliografía / Fuentes</h4>
+        <ul>
+          <li>Artículos académicos sobre TTS y vocoders.</li>
+          <li>Demostraciones públicas y repositorios (ej. Vocoder repos, demos de Vocaloid).</li>
+          <li>Informes y notas de prensa sobre regulaciones y derechos de voz.</li>
+        </ul>
+      </div>
+      <div class="credits">
+        <h4>Créditos</h4>
+        <p>Creación / Diseño / Programación:</p>
+        <ul>
+          <li>Alessandro Frade</li>
+          <li>Ailen Avanzini</li>
+          <li>Juan Bautista Ruiz Arizcuren</li>
+          <li>Luciano Testa</li>
+          <li>Lautaro Gomez Arenillas</li>
+          <li>Franco Vizgarra</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+// --- SCRIPT: filtros, expandibles, trivias, feedback, media preview ---
+
+function parseDateFrom(el) {
+  const raw = el.dataset.date || "";
+  if (!raw) return 0;
+  const d = new Date(raw);
+  if (!isNaN(d)) return d.getTime();
+  const m = raw.match(/(19|20)\d{2}/);
+  return m ? new Date(m[0] + "-01-01").getTime() : 0;
+}
+
+function relayout() {
+  const container = document.querySelector('.timeline');
+  const items = Array.from(container.querySelectorAll('.t-item')).filter(i => !i.classList.contains('hidden'));
+  items.sort((a, b) => parseDateFrom(a) - parseDateFrom(b));
+  items.forEach((el, idx) => {
+    el.classList.remove('left', 'right');
+    el.classList.add(idx % 2 === 0 ? 'left' : 'right');
+    container.appendChild(el);
+  });
+}
+
+// Expandibles
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.toggle')) {
+    const card = e.target.closest('.card');
+    const expanded = card.classList.toggle('expanded');
+    e.target.setAttribute('aria-expanded', expanded);
+    if (expanded) {
+      const expandEl = card.querySelector('.expand');
+      if (expandEl) expandEl.scrollTop = 0;
+    }
+  }
+});
+
+// Trivia buttons (works both for timeline-embedded quizzes and trivias section)
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.quiz .q')) {
+    const q = e.target.closest('.quiz');
+    const answer = q.dataset.answer;
+    const btn = e.target;
+    const ok = btn.dataset.opt === answer;
+    const result = q.querySelector('.q-result');
+    result.textContent = ok ? '✅ ¡Correcto!' : '❌ Incorrecto';
+    btn.style.outline = ok ? '2px solid rgba(34,197,94,.25)' : '2px solid rgba(239,68,68,.25)';
+    setTimeout(() => btn.style.outline = '', 1400);
+  }
+});
+
+// Media upload preview for curiosities
+function handleMediaInput(input) {
+  const container = input.closest('.card').querySelector('.media-player');
+  container.innerHTML = '';
+  const file = input.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  if (file.type.startsWith('audio/')) {
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.src = url;
+    audio.style.width = '100%';
+    container.appendChild(audio);
+  } else if (file.type.startsWith('video/')) {
+    const video = document.createElement('video');
+    video.controls = true;
+    video.src = url;
+    video.style.width = '100%';
+    container.appendChild(video);
+  }
+}
+
+document.addEventListener('change', (e) => {
+  if (e.target.matches('.media-input')) handleMediaInput(e.target);
+});
+
+// FAB mostrar tras scroll
+const fab = document.getElementById('fab');
+window.addEventListener('scroll', () => {
+  const show = window.scrollY > 260;
+  fab.classList.toggle('visible', show);
+});
+
+// Modal filtros
+const modal = document.getElementById('modal');
+const openModal = () => modal.classList.add('open');
+const closeModal = () => modal.classList.remove('open');
+fab.addEventListener('click', openModal);
+document.getElementById('close').addEventListener('click', closeModal);
+
+function applyFilters(selectedSet) {
+  const items = document.querySelectorAll('.t-item');
+  if (!selectedSet || selectedSet.size === 0) {
+    items.forEach(i => i.classList.remove('hidden'));
+    relayout();
+    return;
+  }
+  items.forEach(i => {
+    const color = (i.dataset.color || '').toLowerCase();
+    if (selectedSet.has(color)) i.classList.remove('hidden');
+    else i.classList.add('hidden');
+  });
+  relayout();
+}
+
+document.getElementById('apply').addEventListener('click', () => {
+  const picks = Array.from(modal.querySelectorAll('input[type="checkbox"]'))
+    .filter(c => c.checked)
+    .map(c => c.value);
+  const allChecks = Array.from(modal.querySelectorAll('input[type="checkbox"]')).map(c => c.value);
+  const allSelected = allChecks.every(v => picks.includes(v));
+  const selectedSet = (picks.length === 0 || allSelected) ? new Set() : new Set(picks);
+  applyFilters(selectedSet);
+  closeModal();
+});
+
+document.getElementById('all').addEventListener('click', () => {
+  modal.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  applyFilters(new Set());
+  closeModal();
+});
+
+// Feedback (like/estrellas/comentario)
+const likeBtns = document.querySelectorAll('.like button');
+const stars = Array.from(document.querySelectorAll('.star'));
+let like = null, rating = 0, sent = false;
+
+likeBtns.forEach(b => b.addEventListener('click', () => {
+  if (sent) return; // no cambiar si ya enviado
+  like = b.dataset.like;
+  likeBtns.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+}));
+
+stars.forEach(s => s.addEventListener('click', () => {
+  if (sent) return; // bloquear si ya enviado
+  rating = Number(s.dataset.star);
+  stars.forEach((x, i) => x.textContent = (i < rating) ? '★' : '☆');
+}));
+
+function fireConfetti(options = {}) {
+  const root = document.getElementById('confetti-root');
+  const emojis = options.emojis || ['🤖','🎵','🧠','🎧','🔊'];
+  const count = options.count || 36;
+  const life = options.duration || 1800; 
+  const created = [];
+
+  for (let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-emoji';
+    el.style.position = 'absolute';
+    el.style.left = (50 + (Math.random()*120 - 60)) + '%';
+    el.style.top = Math.random()*30 + '%';
+    el.style.fontSize = (12 + Math.random()*22) + 'px';
+    el.style.opacity = 0.95;
+    el.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+    el.style.willChange = 'transform,opacity';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    root.appendChild(el);
+    created.push(el);
+
+    const dx = (Math.random()*160 - 80);
+    const dy = (200 + Math.random()*240);
+    const rot = (Math.random()*720 - 360);
+    el.animate([
+      { transform: `translate(0px, 0px) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0.05 }
+    ], {
+      duration: life + Math.random()*400,
+      easing: 'cubic-bezier(.2,.8,.2,1)',
+      iterations: 1
+    });
+  }
+
+  setTimeout(()=> {
+    created.forEach(el => el.remove());
+  }, life + 500);
+}
+
+// Enviar feedback: guardar y bloquear cambios posteriores
+document.getElementById('fb-send').addEventListener('click', () => {
+  if (sent) return;
+  const text = document.getElementById('fb-text').value.trim();
+  const payload = { like, rating, text, ts: Date.now() };
+  try {
+    localStorage.setItem('ia-voz-feedback', JSON.stringify(payload));
+  } catch(e) {
+    console.warn('No se pudo guardar en localStorage', e);
+  }
+
+  // Ocultar form y mostrar mensaje de gracias
+  const form = document.getElementById('fb-form');
+  form.classList.add('hidden');
+
+  const msg = document.getElementById('fb-msg');
+  msg.textContent = '¡Gracias! Tu aporte quedó guardado localmente.';
+  fireConfetti({ emojis: ['🤖','🎵','🧠','🎧','🔊'], count: 36, duration: 1800 });
+
+  // bloquear interacciones posteriores
+  sent = true;
+  likeBtns.forEach(b => b.disabled = true);
+  stars.forEach(s => { s.classList.add('locked'); s.style.pointerEvents = 'none'; });
+});
+
+// Limpiar (solo si no enviado)
+document.getElementById('fb-clear').addEventListener('click', () => {
+  if (sent) return; // no limpiar si ya enviado
+  document.getElementById('fb-text').value = '';
+  like = null; rating = 0;
+  likeBtns.forEach(x => x.classList.remove('active'));
+  stars.forEach(x => x.textContent = '☆');
+  localStorage.removeItem('ia-voz-feedback');
+  document.getElementById('fb-msg').textContent = '';
+});
+
+// Inicial: ordenar por fecha
+relayout();
+  </script>
+</body>
+</html>
